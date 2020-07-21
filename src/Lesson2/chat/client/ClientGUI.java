@@ -1,13 +1,13 @@
 package Lesson2.chat.client;
 
 import Lesson2.chat.library.Library;
+import Lesson2.chat.server.core.ClientThread;
 import Lesson2.network.SocketThread;
 import Lesson2.network.SocketThreadListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
@@ -25,8 +25,8 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
     private final JTextField tfIPAddress = new JTextField("127.0.0.1");
     private final JTextField tfPort = new JTextField("8189");
     private final JCheckBox cbAlwaysOnTop = new JCheckBox("Always on top", true);
-    private final JTextField tfLogin = new JTextField("ivan");
-    private final JPasswordField tfPassword = new JPasswordField("123");
+    private final JTextField tfLogin = new JTextField("igor");
+    private final JPasswordField tfPassword = new JPasswordField("test");
     private final JButton btnLogin = new JButton("Login");
 
     private final JPanel panelBottom = new JPanel(new BorderLayout());
@@ -57,9 +57,6 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         setSize(WIDTH, HEIGHT);
         setAlwaysOnTop(true);
         setTitle(WINDOW_TITLE);
-//        userList.setListData(new String[]{"user1", "user2", "user3", "user4",
-//                "user5", "user6", "user7", "user8", "user9",
-//                "user-with-exceptionally-long-name-in-this-chat"});
         JScrollPane scrUser = new JScrollPane(userList);
         JScrollPane scrLog = new JScrollPane(log);
         scrUser.setPreferredSize(new Dimension(100, 0));
@@ -71,6 +68,15 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         btnSend.addActionListener(this);
         btnLogin.addActionListener(this);
         btnDisconnect.addActionListener(this);
+        userList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ( e.getClickCount() == 2 ) {
+                    int selected = userList.locationToIndex(e.getPoint());
+                    handleMessage(Library.NICKNAME_CHANGE+Library.DELIMITER+userList.getSelectedValue());
+                }
+            }
+        });
 
         panelTop.add(tfIPAddress);
         panelTop.add(tfPort);
@@ -122,8 +128,6 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         tfMessage.setText(null);
         tfMessage.requestFocusInWindow();
         socketThread.sendMessage(Library.getTypeBcastClient(msg));
-        //putLog(String.format("%s: %s", username, msg));
-        //wrtMsgToLogFile(msg, username);
     }
 
     private void wrtMsgToLogFile(String msg, String username) {
@@ -199,7 +203,6 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
     @Override
     public void onReceiveString(SocketThread thread, Socket socket, String msg) {
         handleMessage(msg);
-
     }
 
     @Override
@@ -231,6 +234,12 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
                 String[] userArr = users.split(Library.DELIMITER);
                 Arrays.sort(userArr);
                 userList.setListData(userArr);
+                break;
+            case Library.NICKNAME_CHANGE:
+                String newNickname = JOptionPane.showInputDialog("Input new nickname");
+                if(!newNickname.isEmpty() && !newNickname.equals(" "))
+                    this.socketThread.sendMessage(Library.NICKNAME_CHANGE+Library.DELIMITER+newNickname);
+                System.out.println("Клиент отправил сокету:" + Library.NICKNAME_CHANGE+Library.DELIMITER+newNickname);
                 break;
             default:
                 throw new RuntimeException("Unknown message type: " + value);

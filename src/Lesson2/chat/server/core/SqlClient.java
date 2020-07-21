@@ -10,7 +10,7 @@ public class SqlClient {
     synchronized static void connect() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:chat-server/chat-db.sqlite");
+            connection = DriverManager.getConnection("jdbc:sqlite:chat-server.db");
             statement = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
@@ -27,6 +27,18 @@ public class SqlClient {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public synchronized static void changeOfNickname(String oldNickname, String newNickname){
+        try (ResultSet set = statement.executeQuery("select id from users where nickname = '"+oldNickname+"'")) {
+            if (set.next()) {
+                Integer id = set.getInt(1);
+                System.out.println(id);
+                statement.executeQuery("update users set nickname = '"+newNickname+"' where id = "+ id);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     synchronized static void disconnect() {
