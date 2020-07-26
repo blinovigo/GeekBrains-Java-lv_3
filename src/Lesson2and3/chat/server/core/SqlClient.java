@@ -1,4 +1,4 @@
-package Lesson2.chat.server.core;
+package Lesson2and3.chat.server.core;
 
 import java.sql.*;
 

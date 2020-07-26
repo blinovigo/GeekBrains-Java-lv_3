@@ -1,12 +1,10 @@
-package Lesson2.chat.server.gui.fx;
+package Lesson2and3.chat.server.gui.fx;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class Server extends Application {
 

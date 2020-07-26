@@ -1,4 +1,4 @@
-package Lesson2.network;
+package Lesson2and3.network;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,10 +1,10 @@
-package Lesson2.chat.server.core;
+package Lesson2and3.chat.server.core;
 
-import Lesson2.chat.library.Library;
-import Lesson2.network.ServerSocketThread;
-import Lesson2.network.ServerSocketThreadListener;
-import Lesson2.network.SocketThread;
-import Lesson2.network.SocketThreadListener;
+import Lesson2and3.chat.library.Library;
+import Lesson2and3.network.ServerSocketThread;
+import Lesson2and3.network.ServerSocketThreadListener;
+import Lesson2and3.network.SocketThread;
+import Lesson2and3.network.SocketThreadListener;
 
 import java.net.ServerSocket;
 import java.net.Socket;
