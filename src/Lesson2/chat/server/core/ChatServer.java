@@ -127,6 +127,10 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
                 sendToAllAuthorizedClients(Library.getTypeBroadcast(
                         client.getNickname(), arr[1]));
                 break;
+            case Library.NICKNAME_CHANGE:
+                changOfNickname(client.getNickname(),arr[1]);
+                System.out.println("Сервер отправил запрос методу скул:" + client.getNickname() + arr[1]);
+                break;
             default:
                 client.sendMessage(Library.getMsgFormatError(msg));
         }
@@ -193,5 +197,9 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
                 return client;
         }
         return null;
+    }
+
+    private synchronized void changOfNickname(String oldNickname, String newNickname){
+        SqlClient.changeOfNickname(oldNickname, newNickname);
     }
 }
