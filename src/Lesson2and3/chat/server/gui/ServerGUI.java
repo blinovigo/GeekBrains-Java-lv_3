@@ -1,7 +1,7 @@
-package Lesson2.chat.server.gui;
+package Lesson2and3.chat.server.gui;
 
-import Lesson2.chat.server.core.ChatServer;
-import Lesson2.chat.server.core.ChatServerListener;
+import Lesson2and3.chat.server.core.ChatServer;
+import Lesson2and3.chat.server.core.ChatServerListener;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,19 +1,20 @@
-package Lesson2.chat.client;
+package Lesson2and3.chat.client;
 
-import Lesson2.chat.library.Library;
-import Lesson2.chat.server.core.ClientThread;
-import Lesson2.network.SocketThread;
-import Lesson2.network.SocketThreadListener;
+import Lesson2and3.chat.library.Library;
+import Lesson2and3.network.SocketThread;
+import Lesson2and3.network.SocketThreadListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class ClientGUI extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler, SocketThreadListener {
 
@@ -130,10 +131,27 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         socketThread.sendMessage(Library.getTypeBcastClient(msg));
     }
 
-    private void wrtMsgToLogFile(String msg, String username) {
-        try (FileWriter out = new FileWriter("log.txt", true)) {
+    private void wrtToLogFile(String msg) {
+        String username = tfLogin.getText();
+        try (FileWriter out = new FileWriter("history_"+username+".txt", true)) {
             out.write(username + ": " + msg + System.lineSeparator());
             out.flush();
+        } catch (IOException e) {
+            if (!shownIoErrors) {
+                shownIoErrors = true;
+                showException(Thread.currentThread(), e);
+            }
+        }
+    }
+
+    private void readToLogFile() {
+        String username = tfLogin.getText();
+        try (FileReader in = new FileReader("history_"+username+".txt")) {
+            Scanner scan = new Scanner(in);
+            for (int i = 0; i < 100; i++) {
+                if(scan.hasNextLine())
+                    log.append(scan.nextLine() + System.lineSeparator());
+            }
         } catch (IOException e) {
             if (!shownIoErrors) {
                 shownIoErrors = true;
@@ -149,6 +167,7 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
             public void run() {
                 log.append(msg + System.lineSeparator());
                 log.setCaretPosition(log.getDocument().getLength());
+                wrtToLogFile(msg);
             }
         });
     }
@@ -216,6 +235,7 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
         switch (msgType) {
             case Library.AUTH_ACCEPT:
                 setTitle(WINDOW_TITLE + " authorized with nickname " + arr[1]);
+                readToLogFile();
                 break;
             case Library.AUTH_DENIED:
                 putLog(value);
@@ -237,9 +257,10 @@ public class ClientGUI extends JFrame implements ActionListener, Thread.Uncaught
                 break;
             case Library.NICKNAME_CHANGE:
                 String newNickname = JOptionPane.showInputDialog("Input new nickname");
+                if (newNickname == null)
+                    break;
                 if(!newNickname.isEmpty() && !newNickname.equals(" "))
                     this.socketThread.sendMessage(Library.NICKNAME_CHANGE+Library.DELIMITER+newNickname);
-                System.out.println("Клиент отправил сокету:" + Library.NICKNAME_CHANGE+Library.DELIMITER+newNickname);
                 break;
             default:
                 throw new RuntimeException("Unknown message type: " + value);

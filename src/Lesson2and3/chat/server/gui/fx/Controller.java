@@ -1,10 +1,10 @@
-package Lesson2.chat.server.gui.fx;
+package Lesson2and3.chat.server.gui.fx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import Lesson2.chat.server.core.ChatServer;
-import Lesson2.chat.server.core.ChatServerListener;
+import Lesson2and3.chat.server.core.ChatServer;
+import Lesson2and3.chat.server.core.ChatServerListener;
 
 public class Controller implements ChatServerListener {
 

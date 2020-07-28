@@ -1,4 +1,4 @@
-package Lesson2.chat.library;
+package Lesson2and3.chat.library;
 
 public class Library {
     /*
