@@ -9,12 +9,15 @@ import Lesson2and3.network.SocketThreadListener;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatServer implements ServerSocketThreadListener, SocketThreadListener {
 
     ServerSocketThread server;
     ChatServerListener listener;
     Vector<SocketThread> clients = new Vector<>();
+    ExecutorService executorService = Executors.newCachedThreadPool();
 
     public ChatServer(ChatServerListener listener) {
         this.listener = listener;
@@ -63,7 +66,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
     public void onSocketAccepted(ServerSocketThread thread, ServerSocket server, Socket socket) {
         putLog("Client connected");
         String name = "SocketThread " + socket.getInetAddress() + ":" + socket.getPort();
-        new ClientThread(this, name, socket);
+        executorService.execute(new ClientThread(this, name, socket));
     }
 
     @Override
@@ -76,6 +79,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
     public void onServerStop(ServerSocketThread thread) {
         putLog("Server thread stopped");
         dropAllClients();
+        executorService.shutdown();
         SqlClient.disconnect();
     }
 
